@@ -1,0 +1,44 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 15.05.2023 22:22:43
+// Design Name: 
+
+// Module Name: AI_tb
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module AI_tb();
+reg clk,active,start;
+wire final_memory;
+AI in(clk,active,start,final_memory);
+always #250 clk=~clk;
+initial
+begin
+start=1'b1;
+clk=1'b0;
+active=1'b1;
+#100
+start=1'b0;
+end
+
+//always #5 active=~active;
+initial begin
+
+active=1'b1;
+#15000 active=0;
+end
+endmodule
