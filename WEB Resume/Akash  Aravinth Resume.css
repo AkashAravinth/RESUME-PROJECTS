@@ -1,0 +1,164 @@
+/*main-*/
+#main_flex{
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    width:100%;
+}
+/*first header section*/
+body
+{
+    background-color: rgb(255, 255, 255);
+    font-family: cursive;
+    color:rgb(255, 255, 255);
+    text-align: justify;
+    animation-name: change_color;
+    animation-duration: 1s;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+.dynamic_color
+{
+  color:#ffffff;
+  animation-name: change_color;
+  animation-duration: 1s;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+@keyframes change_color
+{
+  100%{
+    background-color: rgb(17, 79, 146);
+  }
+}
+#head_flex
+{
+
+    display: flex;
+    justify-content: space-around;
+    height:250px;
+}
+#head_flex_div1
+{
+    margin-left:100px;
+}
+#head_flex_div2
+{
+    margin-right:60px;
+}
+a:link
+{
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+}
+a:active
+{
+    color: rgb(8, 58, 112);
+}
+#profile
+{
+    margin-top:25px;
+    width:75px;
+    height:100px;
+    border-radius: 20px;
+}
+/*2ND header section*/
+
+#second_head1
+{
+
+    position:absolute;
+    top:170px;
+    left:270px;
+}
+#second_head2
+{
+
+    position:absolute;
+    top:170px;
+    left:720px;
+}
+#second_head3
+{
+
+    position:absolute;
+    top:170px;
+    left:1160px;
+}
+/*content section*/
+#content_flex{
+    display:flex;
+    justify-content: space-around;
+
+}
+#content_flex_education
+{
+    display:flex;
+    flex-direction:column;
+    width:420px;
+    margin-left:90px;
+}
+#content_flex_education_div
+{
+    display:flex;
+    flex-direction:column;
+    
+}
+#content_flex_education_div_inner
+{
+    display:flex;
+}
+#content_flex_inner_others
+{
+    display:flex;
+    flex-direction:column;
+    width:420px;
+}
+#content_flex_skills
+{
+    display:flex;
+    flex-direction:column;
+}
+#content_flex_skills ul{
+    margin:0;
+}
+#content_flex_projects
+{
+    display:flex;
+    flex-direction:column;
+    padding-right:20px;
+}
+#content_flex_personal_projects
+{
+    display:flex;
+    flex-direction:column;
+    padding-right:20px;
+    margin-top:60px;
+}
+#content_flex_intrests
+{
+    display:flex;
+    flex-direction:column;
+    margin-top:100px;
+}
+.flex
+{
+    background-color: rgb(8, 58, 112);
+    margin:20px;
+    border-radius:20px;
+}
+.flex1{
+    background-color: rgb(66, 136, 210);
+    margin:20px;
+    border-radius:20px;
+}
+.padd
+{
+    padding-left:40px;
+}
+ul{
+    padding-left:30px;
+}
+
