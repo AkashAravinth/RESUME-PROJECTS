@@ -1,0 +1,335 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 13.05.2023 21:28:02
+// Design Name: 
+// Module Name: AI
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+/*function [7:0] sum();  
+    input [7:0] a, b;  
+        sum = a + b;  
+ endfunction
+ */
+
+
+
+
+
+//MAIN MODULE
+module AI(clk,active,start,final_memory);
+input clk,active,start;
+output reg final_memory=25'b1111111111111111111111111;
+reg [24:0]change=25'b1111111111111111111111111;
+reg memory [0:4][0:4];
+integer index,i1,j1,i=0,j=0,icur,jcur,finish=1,explore;
+reg present,reward_present;
+reg [1:0]exploit,q_update;
+//reg [2:0]index;//,ibit,jbit;
+integer ep=89;
+reg [7:0]random_val;
+reg possible[0:7];
+reg [1:0]q_memory[0:4][0:4];
+/*TRACE MEMORY
+always@ (start)
+for (i=0;i<4;i=i+1)
+begin
+for(j=0;j<4;j=j+1)
+begin
+    memory[i][j]=1'b0;
+end
+end*/
+
+
+
+//GRID WORLD ENVIRONMENT
+  reg grid_memory [0:4][0:4];
+// Matrix memory array with 25 blocks
+ always@(start)
+  begin
+  for (i=0;i<25;i=i+1)
+  begin
+  for (j=0;j<5;j=j+1)
+  begin
+  if(((i==0)&(j==1))|((i==1)&(j==3))|((i==2)&(j==0))|((i==3)&(j==3))|((i==4)&(j==1)))
+  begin
+  grid_memory[i][j]=1;
+  end
+  else
+  grid_memory[i][j]=0;
+  end
+  end
+  end
+
+
+//QTABLE
+always@ (start)
+for (i=0;i<4;i=i+1)
+begin
+for(j=0;j<4;j=j+1)
+begin
+    q_memory[i][j]=2'b00;
+end
+end
+
+
+
+always@ (posedge clk or posedge active)
+begin
+    if(clk && active)
+    begin
+    //reset the trace table
+    for (i=0;i<4;i=i+1)
+    begin
+    for(j=0;j<4;j=j+1)
+    begin
+        if(i==0 && j==0)
+        begin
+            memory[i][j]=1'b1;
+        end
+        else
+            memory[i][j]=1'b0;
+        
+    end
+    end
+
+// for one single iteration , the always above acts as the main loop
+    while(i<5)
+    begin
+            while(j<5)//based on the matrix size
+            begin
+                q_update=4'b0000;
+                icur=i;
+                jcur=j;
+                //find all possible movemnents
+// trace tracker read
+                for (i1=0;i1<5;i1=i1+1)
+                begin
+                for(j1=0;j1<5;j1=j1+1)
+                begin
+                if(i1==4)
+                begin
+                possible[0]=1'b1;
+                possible[1]=1'b0;
+                possible[2]=1'b0;
+                end
+                if(j1==4)
+                begin
+                possible[0]=1'b0;
+                possible[1]=1'b0;
+                possible[2]=1'b1;
+                end
+                else
+                begin
+                possible[0]=1'b1;
+                possible[1]=1'b1;
+                possible[2]=1'b1;
+                end
+                end
+                end
+
+                
+
+
+
+
+
+//from the all posible movements check whether there is any exploited
+//mem_QTABLE read
+
+               exploit=q_memory[i][j];       
+                
+        //checking whether this position has explloted value      
+                
+                
+                
+                
+                if(possible[0]==1'b1 && exploit==2'b01)
+                    present=1'b1;
+                else if(possible[1]==1'b1 && exploit==2'b10)
+                    present=1'b1;
+                else if(possible[2]==1'b1 && exploit==2'b11)
+                    present=1'b1;
+                else
+                    present=1'b0;
+                //if present then go for epsilon method
+                if(present)
+                begin
+                    random_val = $urandom_range(0,100);
+                    if(random_val <ep)//exploration
+                    begin
+                        //making the choice of explore
+                        finish=1;
+                        while(finish)
+                        begin
+                            index=$urandom_range(0,3);
+                            if(index==0 && possible[0]==1'b1)
+                            begin
+                                explore=0;
+                                finish=0;
+                                q_update=2'b01;
+                            end
+                            else if(index==1 && possible[1]==1'b1)
+                            begin
+                                explore=1;
+                                finish=0;
+                                q_update=2'b10;
+                            end
+                            else if(index==2 && possible[2]==1'b1)
+                            begin
+                                explore=2;
+                                finish=0;
+                                q_update=2'b11;
+                            end                                                                                                                                                                                          
+                        end
+                        //making the movement
+                        if(explore==0)
+                            j=j+1;
+                        else if(explore==1)
+                        begin
+                            i=i+1;
+                            j=j+1;
+                        end
+                        else if(explore==2)
+                            i=i+1;                
+                
+                //update the trace mem
+                    memory[i][j]=1'b1;
+
+//update qtable
+
+                    if(grid_memory[i][j]==1'b1)
+                    reward_present=1'b1;
+                    else
+                    reward_present=1'b0;
+                        if(reward_present)
+                        begin
+                            //write the q table with the index position icur and jcur
+                            q_memory[icur][jcur]=q_update ;
+                        end
+                    
+                    end
+                    else//exploitation
+                    begin
+                        if(exploit==2'b01)
+                            j=j+1;
+                        else if(exploit==2'b10)
+                        begin
+                            i=i+1;
+                            j=j+1;
+                        end
+                        else if(exploit==2'b11)
+                            i=i+1;                
+              
+                        
+
+// trace tracker write
+
+                        memory[i][j]=1'b1;   
+                        
+           
+
+
+
+
+                  
+                end
+                end
+                //else move directly to the exploration part
+                else
+                begin
+                        finish=1;
+                        while(finish)
+                        begin
+                            index=$urandom_range(0,3);
+                            if(index==0 && possible[0]==1'b1)
+                            begin
+                                explore=0;
+                                finish=0;
+                                q_update=2'b01;
+                            end
+                            else if(index==1 && possible[1]==1'b1)
+                            begin
+                                explore=1;
+                                finish=0;
+                                q_update=2'b10;
+                            end
+                            else if(index==2 && possible[2]==1'b1)
+                            begin
+                                explore=2;
+                                finish=0;
+                                q_update=2'b11;
+                            end                                                                                                                                                                                          
+                        end
+                        //making the movement
+                        if(explore==0)
+                            j=j+1;
+                        else if(explore==1)
+                        begin
+                            i=i+1;
+                            j=j+1;
+                        end
+                        else if(explore==2)
+                            i=i+1;                
+                    end
+                end
+                //update the trace mem
+                memory[i][j]=1'b1;
+
+
+// update the qtable
+                if(grid_memory[i][j]==1'b1)
+                reward_present=1'b1;
+                else
+                reward_present=1'b0;
+
+
+
+                        if(reward_present)
+                        begin
+                            //write the q table with the index position icur and jcur
+                            q_memory[icur][jcur]=q_update ;  
+                        end
+
+
+
+
+            end
+         end
+        ep=ep-3;//change epsilon in terms of 3 ,30 iterations     
+end
+always@(negedge active)
+begin
+    
+    for(i=0;i<5;i=i+1)
+    begin
+        for(j=0;j<5;j=j+1)
+        begin
+        $display("%d,",memory[i][j]);
+    /*
+        for(j=0;j<5;j=j+1)
+        begin
+            operand << shift_amount;
+            final_memory=;
+            bit_index=1+bit_index;
+        end
+        */
+        end
+        $display("\n");
+    end
+end
+endmodule
+
